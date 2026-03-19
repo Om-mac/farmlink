@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FarmLink - Create & Manage</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      background: linear-gradient(135deg, #0b1220 0%, #1a2a3a 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #eaf1ff;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #87ceeb, #d1eaff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .workflow {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+    }
+
+    .card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 18px;
+      color: #9fd6ff;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.9);
+      gap: 5px;
+    }
+
+    label span {
+      font-weight: 500;
+      font-size: 0.85rem;
+    }
+
+    input,
+    select {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.25);
+      color: #eaf1ff;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #3966ff;
+      box-shadow: 0 0 0 3px rgba(57, 102, 255, 0.1);
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #3966ff, #2f56d1);
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 8px;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #2f56d1, #1f3a99);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(57, 102, 255, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .message {
+      font-size: 0.85rem;
+      margin-top: 8px;
+      min-height: 18px;
+      color: #a8e6a1;
+      font-weight: 500;
+    }
+
+    .message.error {
+      color: #ff9999;
+    }
+
+    .list-section {
+      margin-top: 20px;
+    }
+
+    .list-section h3 {
+      font-size: 1rem;
+      color: #87ceeb;
+      margin-bottom: 12px;
+    }
+
+    .list {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 12px;
+    }
+
+    .list-item {
+      padding: 10px;
+      margin-bottom: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      border-left: 3px solid #3966ff;
+      font-size: 0.9rem;
+    }
+
+    .list-item strong {
+      color: #d1eaff;
+    }
+
+    .list-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .list-empty {
+      color: rgba(255, 255, 255, 0.5);
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .workflow {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .card {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🌾 FarmLink Workflow</h1>
+      <p class="subtitle">Create farmers and buyers to build your network</p>
+    </header>
+
+    <div class="workflow">
+      <!-- Create Farmer Card -->
+      <div class="card">
+        <h2>➕ Add Farmer</h2>
+        <form id="createFarmerForm">
+          <label>
+            <span>Farm Name *</span>
+            <input type="text" name="farm_name" placeholder="e.g., Green Valley Farm" required />
+          </label>
+          <label>
+            <span>Location *</span>
+            <input type="text" name="location" placeholder="e.g., Punjab" required />
+          </label>
+          <label>
+            <span>Country *</span>
+            <input type="text" name="country" value="India" required />
+          </label>
+          <label>
+            <span>Phone *</span>
+            <input type="tel" name="phone" placeholder="e.g., +91-987654321" required />
+          </label>
+          <label>
+            <span>Daily Production (kg)</span>
+            <input type="number" name="daily_production_kg" value="500" min="1" required />
+          </label>
+          <label>
+            <span>Farm Size (hectares)</span>
+            <input type="number" name="farm_size_hectares" value="5" step="0.1" min="0.1" required />
+          </label>
+          <label>
+            <span>Years in Business</span>
+            <input type="number" name="years_in_business" value="5" min="0" required />
+          </label>
+          <label>
+            <span>Certification</span>
+            <select name="certification">
+              <option value="organic">🍃 Organic</option>
+              <option value="fair_trade">⚖️ Fair Trade</option>
+              <option value="conventional">🌾 Conventional</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <label>
+            <span>Email (optional)</span>
+            <input type="email" name="email" placeholder="farmer@example.com" />
+          </label>
+          <button type="submit">Create Farmer</button>
+          <div class="message" id="farmerMsg"></div>
+        </form>
+
+        <!-- Farmers List -->
+        <div class="list-section">
+          <h3>👥 Active Farmers</h3>
+          <div class="list" id="farmersList">
+            <div class="list-empty">Loading farmers...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create Buyer Card -->
+      <div class="card">
+        <h2>➕ Add Buyer</h2>
+        <form id="createBuyerForm">
+          <label>
+            <span>Company Name *</span>
+            <input type="text" name="company_name" placeholder="e.g., Organic Foods Ltd" required />
+          </label>
+          <label>
+            <span>Buyer Type *</span>
+            <select name="buyer_type" required>
+              <option value="">Select type...</option>
+              <option value="factory">🏭 Factory</option>
+              <option value="distributor">📦 Distributor</option>
+              <option value="retailer">🛒 Retailer</option>
+              <option value="exporter">✈️ Exporter</option>
+              <option value="individual">👤 Individual</option>
+            </select>
+          </label>
+          <label>
+            <span>Location *</span>
+            <input type="text" name="location" placeholder="e.g., Delhi" required />
+          </label>
+          <label>
+            <span>Country *</span>
+            <input type="text" name="country" value="India" required />
+          </label>
+          <label>
+            <span>Phone *</span>
+            <input type="tel" name="phone" placeholder="e.g., +91-987654321" required />
+          </label>
+          <label>
+            <span>Avg Monthly Orders</span>
+            <input type="number" name="avg_monthly_orders" value="5" min="1" required />
+          </label>
+          <label>
+            <span>Payment Method</span>
+            <select name="payment_method">
+              <option value="escrow">🔐 Escrow</option>
+              <option value="credit">💳 Credit</option>
+              <option value="prepay">💰 Prepay</option>
+            </select>
+          </label>
+          <label>
+            <span>Email (optional)</span>
+            <input type="email" name="email" placeholder="buyer@example.com" />
+          </label>
+          <button type="submit">Create Buyer</button>
+          <div class="message" id="buyerMsg"></div>
+        </form>
+
+        <!-- Buyers List -->
+        <div class="list-section">
+          <h3>🤝 Active Buyers</h3>
+          <div class="list" id="buyersList">
+            <div class="list-empty">Loading buyers...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Purchase Workflow -->
+    <div class="workflow">
+      <!-- Create Product Pool Card -->
+      <div class="card">
+        <h2>📦 Create Product Pool</h2>
+        <form id="createPoolForm">
+          <label>
+            <span>Product Name *</span>
+            <input type="text" name="product_name" placeholder="e.g., Organic Tomatoes" required />
+          </label>
+          <label>
+            <span>Total Available (kg)</span>
+            <input type="number" name="total_available_kg" value="1000" min="1" required />
+          </label>
+          <label>
+            <span>Target Order Size (kg)</span>
+            <input type="number" name="target_quantity_kg" value="500" min="1" required />
+          </label>
+          <label>
+            <span>Price per kg ($)</span>
+            <input type="number" name="average_price_per_kg" value="5.50" step="0.01" min="0.01" required />
+          </label>
+          <button type="submit">Create Pool</button>
+          <div class="message" id="poolMsg"></div>
+        </form>
+
+        <!-- Product Pools List -->
+        <div class="list-section">
+          <h3>🛍️ Available Products</h3>
+          <div class="list" id="poolsList">
+            <div class="list-empty">Loading products...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create Order Card -->
+      <div class="card">
+        <h2>🛒 Place Order</h2>
+        <form id="createOrderForm">
+          <label>
+            <span>Select Buyer *</span>
+            <select name="buyer_id" id="buyerSelect" required>
+              <option value="">Loading buyers...</option>
+            </select>
+          </label>
+          <label>
+            <span>Select Product Pool *</span>
+            <select name="pool_id" id="poolSelect" required>
+              <option value="">Loading products...</option>
+            </select>
+          </label>
+          <label>
+            <span>Order Quantity (kg) *</span>
+            <input type="number" name="quantity_kg" placeholder="e.g., 250" min="1" required />
+          </label>
+          <label>
+            <span>Unit Price ($)</span>
+            <input type="number" name="unit_price" placeholder="Will auto-fill from pool" step="0.01" min="0.01" />
+          </label>
+          <button type="submit">Place Order</button>
+          <div class="message" id="orderMsg"></div>
+        </form>
+
+        <!-- Orders List -->
+        <div class="list-section">
+          <h3>📋 Recent Orders</h3>
+          <div class="list" id="ordersList">
+            <div class="list-empty">Loading orders...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const farmerMsg = document.getElementById('farmerMsg');
+    const buyerMsg = document.getElementById('buyerMsg');
+    const poolMsg = document.getElementById('poolMsg');
+    const orderMsg = document.getElementById('orderMsg');
+    const farmersList = document.getElementById('farmersList');
+    const buyersList = document.getElementById('buyersList');
+    const poolsList = document.getElementById('poolsList');
+    const ordersList = document.getElementById('ordersList');
+    const buyerSelect = document.getElementById('buyerSelect');
+    const poolSelect = document.getElementById('poolSelect');
+
+    // Load lists on page load
+    window.addEventListener('load', () => {
+      loadFarmers();
+      loadBuyers();
+      loadPools();
+      loadOrders();
+      populateBuyerSelect();
+      populatePoolSelect();
+    });
+
+    async function loadFarmers() {
+      try {
+        const res = await fetch('/api/farmers/', { cache: 'no-store' });
+        const data = await res.json();
+        renderFarmers((Array.isArray(data) ? data : data.results || []));
+      } catch (err) {
+        farmersList.innerHTML = `<div class="list-empty" style="color:#ff9999;">Error loading farmers</div>`;
+      }
+    }
+
+    async function loadBuyers() {
+      try {
+        const res = await fetch('/api/buyers/', { cache: 'no-store' });
+        const data = await res.json();
+        renderBuyers((Array.isArray(data) ? data : data.results || []));
+      } catch (err) {
+        buyersList.innerHTML = `<div class="list-empty" style="color:#ff9999;">Error loading buyers</div>`;
+      }
+    }
+
+    async function loadPools() {
+      try {
+        const res = await fetch('/api/products/pools/', { cache: 'no-store' });
+        const data = await res.json();
+        renderPools((Array.isArray(data) ? data : data.results || []));
+      } catch (err) {
+        poolsList.innerHTML = `<div class="list-empty" style="color:#ff9999;">Error loading products</div>`;
+      }
+    }
+
+    async function loadOrders() {
+      try {
+        const res = await fetch('/api/orders/', { cache: 'no-store' });
+        const data = await res.json();
+        renderOrders((Array.isArray(data) ? data : data.results || []));
+      } catch (err) {
+        ordersList.innerHTML = `<div class="list-empty" style="color:#ff9999;">Error loading orders</div>`;
+      }
+    }
+
+    async function populateBuyerSelect() {
+      try {
+        const res = await fetch('/api/buyers/', { cache: 'no-store' });
+        const data = await res.json();
+        const buyers = Array.isArray(data) ? data : data.results || [];
+        buyerSelect.innerHTML = '<option value="">Select a buyer...</option>' +
+          buyers.map(b => `<option value="${b.id}">${b.company_name}</option>`).join('');
+      } catch (err) {
+        buyerSelect.innerHTML = '<option value="">Error loading buyers</option>';
+      }
+    }
+
+    async function populatePoolSelect() {
+      try {
+        const res = await fetch('/api/products/pools/', { cache: 'no-store' });
+        const data = await res.json();
+        const pools = Array.isArray(data) ? data : data.results || [];
+        poolSelect.innerHTML = '<option value="">Select a product...</option>' +
+          pools.map(p => `<option value="${p.id}" data-price="${p.average_price_per_kg}">${p.product_name} - $${p.average_price_per_kg}/kg</option>`).join('');
+      } catch (err) {
+        poolSelect.innerHTML = '<option value="">Error loading products</option>';
+      }
+    }
+
+    function renderFarmers(farmers) {
+      if (!farmers || farmers.length === 0) {
+        farmersList.innerHTML = '<div class="list-empty">No farmers yet. Create one above!</div>';
+        return;
+      }
+      farmersList.innerHTML = farmers
+        .slice(-5) // Show last 5
+        .map(f => `
+          <div class="list-item">
+            <strong>${f.farm_name}</strong><br/>
+            📍 ${f.location}, ${f.country} | 🌾 ${f.daily_production_kg} kg/day
+          </div>
+        `).join('');
+    }
+
+    function renderBuyers(buyers) {
+      if (!buyers || buyers.length === 0) {
+        buyersList.innerHTML = '<div class="list-empty">No buyers yet. Create one above!</div>';
+        return;
+      }
+      buyersList.innerHTML = buyers
+        .slice(-5) // Show last 5
+        .map(b => `
+          <div class="list-item">
+            <strong>${b.company_name}</strong><br/>
+            ${{'factory': '🏭', 'distributor': '📦', 'retailer': '🛒', 'exporter': '✈️', 'individual': '👤'}[b.buyer_type] || '🤝'} ${b.buyer_type} | 📍 ${b.location}
+          </div>
+        `).join('');
+    }
+
+    function renderPools(pools) {
+      if (!pools || pools.length === 0) {
+        poolsList.innerHTML = '<div class="list-empty">No products yet. Create one above!</div>';
+        return;
+      }
+      poolsList.innerHTML = pools
+        .slice(-5) // Show last 5
+        .map(p => `
+          <div class="list-item">
+            <strong>${p.product_name}</strong><br/>
+            📦 ${p.total_available_kg}kg available | 💰 $${p.average_price_per_kg}/kg | Status: ${p.status}
+          </div>
+        `).join('');
+    }
+
+    function renderOrders(orders) {
+      if (!orders || orders.length === 0) {
+        ordersList.innerHTML = '<div class="list-empty">No orders yet. Create one above!</div>';
+        return;
+      }
+      ordersList.innerHTML = orders
+        .slice(-5) // Show last 5
+        .map(o => `
+          <div class="list-item">
+            <strong>Order #${o.id}</strong><br/>
+            Qty: ${o.quantity_kg}kg | Total: $${o.total_amount} | ${o.status}
+          </div>
+        `).join('');
+    }
+
+    async function postJson(url, body) {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || JSON.stringify(data));
+      return data;
+    }
+
+    document.getElementById('createFarmerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      farmerMsg.textContent = '⏳ Creating...';
+      farmerMsg.classList.remove('error');
+      const data = Object.fromEntries(new FormData(e.target));
+      try {
+        await postJson('/api/farmers/', data);
+        farmerMsg.textContent = '✅ Farmer created!';
+        e.target.reset();
+        setTimeout(() => { farmerMsg.textContent = ''; }, 3000);
+        loadFarmers();
+      } catch (err) {
+        farmerMsg.textContent = `❌ ${err.message}`;
+        farmerMsg.classList.add('error');
+      }
+    });
+
+    document.getElementById('createBuyerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      buyerMsg.textContent = '⏳ Creating...';
+      buyerMsg.classList.remove('error');
+      const data = Object.fromEntries(new FormData(e.target));
+      try {
+        await postJson('/api/buyers/', data);
+        buyerMsg.textContent = '✅ Buyer created!';
+        e.target.reset();
+        setTimeout(() => { buyerMsg.textContent = ''; }, 3000);
+        loadBuyers();
+        populateBuyerSelect();
+      } catch (err) {
+        buyerMsg.textContent = `❌ ${err.message}`;
+        buyerMsg.classList.add('error');
+      }
+    });
+
+    document.getElementById('createPoolForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      poolMsg.textContent = '⏳ Creating...';
+      poolMsg.classList.remove('error');
+      const data = Object.fromEntries(new FormData(e.target));
+      try {
+        await postJson('/api/products/pools/', data);
+        poolMsg.textContent = '✅ Product pool created!';
+        e.target.reset();
+        setTimeout(() => { poolMsg.textContent = ''; }, 3000);
+        loadPools();
+        populatePoolSelect();
+      } catch (err) {
+        poolMsg.textContent = `❌ ${err.message}`;
+        poolMsg.classList.add('error');
+      }
+    });
+
+    document.getElementById('createOrderForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      orderMsg.textContent = '⏳ Creating order...';
+      orderMsg.classList.remove('error');
+      const formData = Object.fromEntries(new FormData(e.target));
+      
+      // Auto-fill unit_price from pool if not provided
+      if (!formData.unit_price || formData.unit_price === '') {
+        const poolOption = poolSelect.options[poolSelect.selectedIndex];
+        formData.unit_price = poolOption.dataset.price;
+      }
+
+      try {
+        await postJson('/api/orders/', formData);
+        orderMsg.textContent = '✅ Order placed!';
+        e.target.reset();
+        setTimeout(() => { orderMsg.textContent = ''; }, 3000);
+        loadOrders();
+      } catch (err) {
+        orderMsg.textContent = `❌ ${err.message}`;
+        orderMsg.classList.add('error');
+      }
+    });
+
+    // Auto-update price when pool selection changes
+    poolSelect.addEventListener('change', () => {
+      const poolOption = poolSelect.options[poolSelect.selectedIndex];
+      const priceInput = document.querySelector('input[name="unit_price"]');
+      if (poolOption.dataset.price) {
+        priceInput.value = poolOption.dataset.price;
+      }
+    });
+  </script>
+</body>
+</html>
